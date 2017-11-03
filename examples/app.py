@@ -78,7 +78,7 @@ class Route_Predictions_For_Stop_ID(Resource):
 class Route_Predictions_For_Stop_ID_For_Route_Tag(Resource):
     def get(self, agency_tag, stop_id, route_tag):
         global api_hits
-        url = "http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=" + agency_tag + "&stopId=" + stop_id + "&routeTag=" + route tag
+        url = "http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=" + agency_tag + "&stopId=" + stop_id + "&routeTag=" + route_tag
 
         if "predictions" in api_hits:
             api_hits["predictions"] += 1
@@ -88,11 +88,12 @@ class Route_Predictions_For_Stop_ID_For_Route_Tag(Resource):
         r = requests.get(url)
         return r.content
 
-class Route_Predictions_For_Stop_ID_For_Route_Tag_For_Stop_Tag(Resource):
-    def get(self, agency_tag, stop_id, route_tag, stop_tag):
+class Route_Predictions_For_Route_Tag_For_Stop_Tag(Resource):
+    def get(self, agency_tag, route_tag, stop_tag):
         global api_hits
-        url = "http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=" + agency_tag + "&stopId=" + stop_id + "&routeTag=" + route tag + "&s=" + stop tag
+        url = "http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=" + agency_tag + "&r=" + route_tag + "&s=" + stop_tag
 
+        print url
         if "predictions" in api_hits:
             api_hits["predictions"] += 1
         else:
@@ -116,7 +117,7 @@ api.add_resource(Route_Config_For_Route_Tag, '/routeConfig/<agency_tag>/<route_t
 api.add_resource(Route_Config_For_Agency_Tag, '/routeConfig/<agency_tag>')
 api.add_resource(Route_Predictions_For_Stop_ID, '/predictions/<agency_tag>/<stop_id>')
 api.add_resource(Route_Predictions_For_Stop_ID_For_Route_Tag, '/predictions/<agency_tag>/<stop_id>/<route_tag>')
-api.add_resource(Route_Predictions_For_Stop_ID_For_Route_Tag_For_Stop_Tag, '/predictions/<agency_tag>/<stop_id>/<route_tag>/<stop_tag>')
+api.add_resource(Route_Predictions_For_Route_Tag_For_Stop_Tag, '/predictions/<agency_tag>/<route_tag>/<stop_tag>')
 api.add_resource(API_Hit, '/apiHit/<api_endpoint_name>')
 
 if __name__ == '__main__':
