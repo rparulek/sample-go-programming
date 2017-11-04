@@ -23,19 +23,6 @@ class Route_List(Resource):
         r = requests.get(url)
         return r.content
 
-class Agency_List(Resource):
-    def get(self):
-        global api_hits
-        url = "http://webservices.nextbus.com/service/publicXMLFeed?command=agencyList"
-
-        if "agencyList" in api_hits:
-            api_hits["agencyList"] += 1
-        else:
-            api_hits["agencyList"] = 1
-
-        r = requests.get(url)
-        return r.content
-
 class API_Hit(Resource):
     def get(self, api_endpoint_name):
         if api_endpoint_name in api_hits:
@@ -46,8 +33,7 @@ class API_Hit(Resource):
         return ('Endpoint access count: ' + str(api_hits[api_endpoint_name]))
 
 api.add_resource(Route_List, '/routeList/<agency_tag>')
-api.add_resource(Agency_List, '/agencyList')
 api.add_resource(API_Hit, '/apiHit/<api_endpoint_name>')
 
 if __name__ == '__main__':
-     app.run(debug=True,host='0.0.0.0',port=5001)
+     app.run(debug=True,host='0.0.0.0',port=5002)

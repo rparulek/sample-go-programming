@@ -41,5 +41,4 @@ api.add_resource(Route_Predictions_For_Multiple_Stops, '/predictionsForMultiStop
 api.add_resource(API_Hit, '/apiHit/<api_endpoint_name>')
 
 if __name__ == '__main__':
-     app.run(debug=True,host='0.0.0.0',port=5002)
-
+     app.run(debug=True,host='0.0.0.0',port=5005)

@@ -37,4 +37,4 @@ api.add_resource(Schedule, '/schedule/<agency_tag>/<route_tag>')
 api.add_resource(API_Hit, '/apiHit/<api_endpoint_name>')
 
 if __name__ == '__main__':
-     app.run(debug=True,host='0.0.0.0',port=5003)
+     app.run(debug=True,host='0.0.0.0',port=5006)
