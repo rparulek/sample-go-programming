@@ -36,32 +36,6 @@ class Agency_List(Resource):
         r = requests.get(url)
         return r.content
 
-class Route_Config_For_Route_Tag(Resource):
-    def get(self, agency_tag, route_tag):
-        global api_hits
-        url = "http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=" + agency_tag + "&r=" + route_tag
-
-        if "routeConfig" in api_hits:
-            api_hits["routeConfig"] += 1
-        else:
-            api_hits["routeConfig"] = 1
-
-        r = requests.get(url)
-        return r.content
-
-class Route_Config_For_Agency_Tag(Resource):
-    def get(self, agency_tag):
-        global api_hits
-        url = "http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=" + agency_tag
-
-        if "routeConfig" in api_hits:
-            api_hits["routeConfig"] += 1
-        else:
-            api_hits["routeConfig"] = 1
-
-        r = requests.get(url)
-        return r.content
-
 class API_Hit(Resource):
     def get(self, api_endpoint_name):
         if api_endpoint_name in api_hits:
@@ -73,8 +47,6 @@ class API_Hit(Resource):
 
 api.add_resource(Route_List, '/routeList/<agency_tag>')
 api.add_resource(Agency_List, '/agencyList')
-api.add_resource(Route_Config_For_Route_Tag, '/routeConfig/<agency_tag>/<route_tag>')
-api.add_resource(Route_Config_For_Agency_Tag, '/routeConfig/<agency_tag>')
 api.add_resource(API_Hit, '/apiHit/<api_endpoint_name>')
 
 if __name__ == '__main__':
