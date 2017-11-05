@@ -46,6 +46,9 @@ class Route_Predictions_For_Stop_ID(Resource):
 class Route_Predictions_For_Stop_ID_For_Specific_Route(Resource):
     def get(self, agency_tag, filter_1, filter_2):
         global api_hits
+        global endpoint_access_tstamp_map
+        time_diff = 31
+
         url = "http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=" + agency_tag
 
         filter_list = []
@@ -64,14 +67,28 @@ class Route_Predictions_For_Stop_ID_For_Specific_Route(Resource):
                     pass
                 else:
                     url = url + "&stopId=" + val + "&routeTag=" + filter_2
+
+        data_lock.acquire()
             
         if "predictions" in api_hits:
             api_hits["predictions"] += 1
         else:
             api_hits["predictions"] = 1
 
-        r = requests.get(url)
-        return r.content
+        if "predictions_per_route" in endpoint_access_tstamp_map:
+            time_diff = time.time() - endpoint_access_tstamp_map["predictions_per_route"]
+        else:
+            endpoint_access_tstamp_map["predictions_per_route"] = time.time()
+
+        data_lock.release()
+
+        if time_diff > 30:
+            r = requests.get(url)
+            endpoint_access_tstamp_map["predictions_per_route"] = time.time()
+            return r.content
+        else:
+            return ('Cannot access this endpoint currently. Try after 30 seconds')
+
 
 class API_Hit(Resource):
     def get(self, api_endpoint_name):
