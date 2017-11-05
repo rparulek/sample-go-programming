@@ -29,9 +29,11 @@ Server:
  OS/Arch:      linux/amd64
  Experimental: false
 
-2) Kubernetes version >= 1.5 or OpenShift version >= 3.5: If this service is run on a Kubernetes or an OpenShift cluster nodes.
+2) Kubernetes version >= 1.5 or OpenShift version >= 3.5: If this service is run on Kubernetes or OpenShift cluster nodes.
 
-3) CentOS/Ubuntu host machine to build the docker image and run this service.
+3) Python version : 2.7.6
+
+4) CentOS/Ubuntu host machine to build the docker image and run this service.
 
 
 Build instructions:
@@ -113,3 +115,14 @@ Design:
 
 
 3) As a part of this service, each of the above illustrated API endpoints will be served by separate containers so that requests for various endpoints can be handled by individual containers handling or serving that endpoint.
+
+4) In order to not hurt the NextBus API with back to back requests, each endpoint cannot be accessed more than once within a 30 seconds time interval. If such an access is attempted, user will be prompted to try the access after 30 seconds. There is no caching of user requests implemented due to time constraints which could be done using Python memoization.
+
+Technologies Used:
+
+- docker
+- Python
+- Flask
+- Flask-Cache
+- Flask-Restful
+- DaemonSets (Kubernetes/OpenShift)
