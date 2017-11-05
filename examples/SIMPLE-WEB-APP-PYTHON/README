@@ -1,0 +1,101 @@
+NextBus Api
+
+Document version 1.0.0
+
+
+Introduction:
+
+This project wraps and extends the XML API exposed at webservice.nextbus.com, and exposes it as scalable RESTful HTTP API. The following document will lay out some assumptions and details about this implementation and it's usage
+
+
+Requirements:
+
+1) Docker: In order to build the docker image for running this service and spawn containers that will serve endpoints in this service
+
+Client:
+ Version:      17.09.0-ce
+ API version:  1.32
+ Go version:   go1.8.3
+ Git commit:   afdb6d4
+ Built:        Tue Sep 26 22:42:38 2017
+ OS/Arch:      linux/amd64
+
+Server:
+ Version:      17.09.0-ce
+ API version:  1.32 (minimum version 1.12)
+ Go version:   go1.8.3
+ Git commit:   afdb6d4
+ Built:        Tue Sep 26 22:41:20 2017
+ OS/Arch:      linux/amd64
+ Experimental: false
+
+2) Kubernetes version >= 1.5 or OpenShift version >= 3.5: If this service is run on a Kubernetes or an OpenShift cluster nodes.
+
+3) CentOS/Ubuntu host machine to build the docker image and run this service.
+
+
+Build instructions:
+
+1) Extract the contents of the "next-bus-wrapper.tar.gz" on your build machine.
+
+2) Run the script "build-app.sh" which will generate the docker image "docker/next-bus-api:v1.0.0" and "next-bus-api-docker-img-1.0.0.tar" to distribute the image on to the nodes you wish to run this service.
+
+
+Run instructions:
+
+1) After docker image tar "next-bus-api-docker-img-1.0.0.tar" has been copied and loaded on the required nodes for this service (docker load -i next-bus-api-docker-img-1.0.0.tar), we are all set to start running this service.
+
+2) This service can be started by running the "start-app.sh" script on each node where you wish to start this service.
+
+
+Run with Kubernetes or OpenShift:
+
+1) If you wish to achieve better scalability and fault-tolerance for your service, you can run this service as daemon set pods on a Kubernetes or an OpenShift cluster. For more details on daemon sets, you can refer to https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/
+
+2) In this scenario, all containers that will serve your service api endpoints will be running as pods on nodes you wish to run this service. The beauty of daemon sets approach is that if any of your container running as a pod dies due to workload or some crash, daemon sets will automagically backup this by creating another container instantaneously thus providing high availability and fault-tolerancy for your service containers. You will need to pre-load the docker image on all your concerned nodes before you spawn the daemon set containers/pods.
+
+3) On nodes where you wish to run these service container pods, you will need to add a label "install-next-bus-api: "true"" using "kubectl label node" or "oc label node" CLI commands. Refer "https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#step-one-attach-label-to-the-node" for details on this.
+
+4) After concerned nodes have been labelled, you can run the daemon set file provided in the tar "next-bus-api-daemonset.yaml". You can run this on the Kubernetes or OpenShift master nodes using "kubectl create -f next-bus-api-daemonset.yaml" for Kubernetes or "oc create -f next-bus-api-daemonset.yaml" for OpenShift cluster.
+
+5) When you run this command, your containers/pods will be automagically launched on your labelled nodes as daemon sets pods backing your service.
+
+
+Design:
+
+1) As a part of this service, we will be serving the NextBus XML api endpoints in the following fashion:
+
+- agencyList/ : http://127.0.0.1:5001/agencyList
+
+
+- routeList/  : http://127.0.0.1:5002/routeList/<agency-tag> Eg: http://127.0.0.1:5002/routeList/sf-muni
+
+
+- routeConfig/ : http://127.0.0.1:5003/routeConfig/<agency-tag>/<route-tag> Eg: http://127.0.0.1:5003/routeConfig/sf-muni/N
+
+
+- predictions/ : http://127.0.0.1:5004/predictions/<agency-tag>/<stop-id> Eg: http://127.0.0.1:5004/predictions/sf-muni/2
+
+              : http://127.0.0.1:5004/predictions/<agency-tag>/RT&<route-tag>/<stop-tag> Eg: http://127.0.0.1:5004/predictions/sf-muni/RT&N/5205
+
+              : http://127.0.0.1:5004/predictions/<agency-tag>/SI&<stop-id>/<route-tag>  Eg: http://127.0.0.1:5004/predictions/sf-muni/SI&2/N
+
+
+- predictionsForMultiStops/ : http://127.0.0.1:5005/predictions/<agency-tag>/<stop-1>&<stop-2>&<stop-3>... Eg: http://127.0.0.1:5005/predictions/sf-muni/N|6997&N|3909
+
+
+- schedule/ : http://127.0.0.1:5006/schedule/<agency-tag>/<route_tag>  Eg: http://127.0.0.1:5006/schedule/sf-muni/N
+
+
+- vehicleLocations/ : http://127.0.0.1:5007/vehicleLocations/<agency-tag>/<route_tag>/<epoch_time_in_ms>  Eg: http://127.0.0.1:5007/vehicleLocations/sf-muni/N/1144953500233
+
+
+- messages/ : http://127.0.0.1:5008/messages/<agency-tag>/<route_tag_1>&<route_tag_2>.... Eg: http://127.0.0.1:5008/messages/sf-muni/N
+
+
+2) Also, the number of times each endpoint in the service was accessed can be obtained using the following extended API call:
+
+- apiHit/  : http://127.0.0.1:5001/apiHit/agencyList
+
+
+3) As a part of this service, each of the above illustrated API endpoints will be served by separate containers so that requests for various endpoints can be handled by individual containers handling or serving that endpoint.
