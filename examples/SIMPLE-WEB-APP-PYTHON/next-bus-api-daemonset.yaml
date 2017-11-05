@@ -28,7 +28,7 @@ spec:
       containers:
         # This container will serve "/agencyList" next bus api on port 5001
         - name: next-bus-api-agency-list
-          image: next-bus-api-img/:v0.0.1
+          image: docker/next-bus-api:v1.0.0
           ports:
             - containerPort: 5001
               hostPort: 5001
@@ -41,7 +41,7 @@ spec:
               value: "agencyList"
         # This container will serve "/routeList" next bus api on port 5002
         - name: next-bus-api-route-list
-          image: next-bus-api-img/:v0.0.1
+          image: docker/next-bus-api:v1.0.0
           ports:
             - containerPort: 5002
               hostPort: 5002
@@ -54,7 +54,7 @@ spec:
               value: "routeList"
         # This container will serve "/routeConfig" next bus api
         - name: next-bus-api-route-config
-          image: next-bus-api-img/:v0.0.1
+          image: docker/next-bus-api:v1.0.0
           ports:
             - containerPort: 5003
               hostPort: 5003
@@ -67,7 +67,7 @@ spec:
               value: "routeConfig"
         # This container will serve "/predictions" next bus api
         - name: next-bus-api-predictions
-          image: next-bus-api-img/:v0.0.1
+          image: docker/next-bus-api:v1.0.0
           ports:
             - containerPort: 5004
               hostPort: 5004
@@ -80,7 +80,7 @@ spec:
               value: "predictions"
         # This container will serve "/predictionsForMultiStops" next bus api
         - name: next-bus-api-predictions-multi-stops
-          image: next-bus-api-img/:v0.0.1
+          image: docker/next-bus-api:v1.0.0
           ports:
             - containerPort: 5005
               hostPort: 5005
@@ -93,7 +93,7 @@ spec:
               value: "predictionsForMultiStops"
         # This container will serve "/schedule" next bus api
         - name: next-bus-api-schedule
-          image: next-bus-api-img/:v0.0.1
+          image: docker/next-bus-api:v1.0.0
           ports:
             - containerPort: 5006
               hostPort: 5006
@@ -106,7 +106,7 @@ spec:
               value: "schedule"
         # This container will serve "/vehicleLocations" next bus api
         - name: next-bus-api-vehicle-locations
-          image: next-bus-api-img/:v0.0.1
+          image: docker/next-bus-api:v1.0.0
           ports:
             - containerPort: 5007
               hostPort: 5007
@@ -119,7 +119,7 @@ spec:
               value: "vehicleLocations"
         # This container will serve "/messages" next bus api
         - name: next-bus-api-messages
-          image: next-bus-api-img/:v0.0.1
+          image: docker/next-bus-api:v1.0.0
           ports:
             - containerPort: 5008
               hostPort: 5008
