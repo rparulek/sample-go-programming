@@ -95,7 +95,21 @@ Design:
 
 2) Also, the number of times each endpoint in the service was accessed can be obtained using the following extended API call:
 
-- apiHit/  : http://127.0.0.1:5001/apiHit/agencyList
+- apiHit/  : http://127.0.0.1:5001/apiHit/agencyList -> Number of time "agencyList" endpoint was accessed
+           
+           : http://127.0.0.1:5002/apiHit/routeList -> Number of time "routeList" endpoint was accessed
+
+           : http://127.0.0.1:5003/apiHit/routeConfig -> Number of time "routeConfig" endpoint was accessed
+
+           : http://127.0.0.1:5004/apiHit/predictions -> Number of time "predictions" endpoint was accessed
+
+           : http://127.0.0.1:5005/apiHit/predictionsForMultiStops -> Number of time "predictionsForMultiStops" endpoint was accessed
+
+           : http://127.0.0.1:5006/apiHit/schedule -> Number of time "schedule" endpoint was accessed
+
+           : http://127.0.0.1:5007/apiHit/vehicleLocations -> Number of time "vehicleLocations" endpoint was accessed
+
+           : http://127.0.0.1:5008/apiHit/predictions -> Number of time "messages" endpoint was accessed
 
 
 3) As a part of this service, each of the above illustrated API endpoints will be served by separate containers so that requests for various endpoints can be handled by individual containers handling or serving that endpoint.
