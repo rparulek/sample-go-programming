@@ -4,15 +4,21 @@ from sqlalchemy import create_engine
 from json import dumps
 from flask.ext.jsonpify import jsonify
 import requests
+import time
+import threading
 
 app = Flask(__name__)
 api = Api(app)
 
 api_hits = dict()
+endpoint_access_tstamp_map = dict()
+data_lock = threading.Lock()
 
 class Route_Predictions_For_Multiple_Stops(Resource):
     def get(self, agency_tag, stops):
         global api_hits
+        global endpoint_access_tstamp_map
+        time_diff = 31
 
         url = "http://webservices.nextbus.com/service/publicXMLFeed?command=predictionsForMultiStops&a=" + agency_tag
 
@@ -20,13 +26,26 @@ class Route_Predictions_For_Multiple_Stops(Resource):
         for stop in stops_list:
             url = url + "&stops=" + stop
 
+        data_lock.acquire()
+
         if "predictionsForMultiStops" in api_hits:
             api_hits["predictionsForMultiStops"] += 1
         else:
             api_hits["predictionsForMultiStops"] = 1
 
-        r = requests.get(url)
-        return r.content
+        if "predictionsForMultiStops" in endpoint_access_tstamp_map:
+            time_diff = time.time() - endpoint_access_tstamp_map["predictionsForMultiStops"]
+        else:
+            endpoint_access_tstamp_map["predictionsForMultiStops"] = time.time()
+
+        data_lock.release()
+
+        if time_diff > 30:
+            r = requests.get(url)
+            endpoint_access_tstamp_map["predictionsForMultiStops"] = time.time()
+            return r.content
+        else:
+            return ('Cannot access this endpoint currently. Try after 30 seconds')
 
 class API_Hit(Resource):
     def get(self, api_endpoint_name):

@@ -4,24 +4,44 @@ from sqlalchemy import create_engine
 from json import dumps
 from flask.ext.jsonpify import jsonify
 import requests
+import time
+import threading
 
 app = Flask(__name__)
 api = Api(app)
 
 api_hits = dict()
+endpoint_access_tstamp_map = dict()
+data_lock = threading.Lock()
 
 class Route_Config_For_Route_Tag(Resource):
     def get(self, agency_tag, route_tag):
         global api_hits
+        global endpoint_access_tstamp_map
+        time_diff = 31
+
         url = "http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=" + agency_tag + "&r=" + route_tag
+
+        data_lock.acquire()
 
         if "routeConfig" in api_hits:
             api_hits["routeConfig"] += 1
         else:
             api_hits["routeConfig"] = 1
 
-        r = requests.get(url)
-        return r.content
+        if "routeConfig" in endpoint_access_tstamp_map:
+            time_diff = time.time() - endpoint_access_tstamp_map["routeConfig"]
+        else:
+            endpoint_access_tstamp_map["routeConfig"] = time.time()
+
+        data_lock.release()
+
+        if time_diff > 30:
+            r = requests.get(url)
+            endpoint_access_tstamp_map["routeConfig"] = time.time()
+            return r.content
+        else:
+            return ('Cannot access this endpoint currently. Try after 30 seconds')
 
 class Route_Config_For_Agency_Tag(Resource):
     def get(self, agency_tag):
